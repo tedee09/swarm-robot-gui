@@ -1,0 +1,3 @@
+[console_scripts]
+role_manager_node = role_manager.role_manager_node:main
+

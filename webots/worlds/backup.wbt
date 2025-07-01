@@ -1,0 +1,868 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/apartment_structure/protos/Wall.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/appearances/protos/Roughcast.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
+  position 0.0002876713771145355 -2.9183049403585224e-07 3.029614051974471
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 2 1.5
+  floorTileSize 0.2 0.2
+  floorAppearance Parquetry {
+    type "dark strip"
+    colorOverride 0 1 0
+  }
+}
+DEF robot1 Robot {
+  translation -0.850005 0.659966 0.09
+  rotation 0 0 1 5.307156870259904e-06
+  children [
+    Camera {
+      translation 0.06 0 0.004
+      children [
+        Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.005 0.005 0.006
+          }
+        }
+      ]
+      name "cam"
+      recognition Recognition {
+        frameColor 1 1 0
+      }
+    }
+    DEF mark Solid {
+      translation 0.005 0 0.035
+      rotation 0 0 1 -1.5707996938995747
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0
+            metalness 0
+          }
+          geometry Plane {
+            size 0.07 0.07
+          }
+        }
+      ]
+      name "solid(5)"
+    }
+    Emitter {
+      channel 1
+    }
+    Receiver {
+      channel 1
+    }
+    InertialUnit {
+      translation 0.021 0 0.043
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0.5 1
+            transparency 1
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "imu"
+    }
+    GPS {
+      children [
+        Solid {
+          translation 0 0 0.041
+          children [
+            Shape {
+              appearance PBRAppearance {
+                transparency 1
+              }
+              geometry Cylinder {
+                height 0.013
+                radius 0.006
+              }
+            }
+          ]
+        }
+      ]
+      name "global"
+    }
+    DEF ds_belakang DistanceSensor {
+      translation -0.0614 0 0.008
+      rotation 0 0 1 3.14159
+      children [
+        DEF belakang Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_belakang"
+      boundingObject USE belakang
+      physics Physics {
+      }
+    }
+    DEF ds_kiri DistanceSensor {
+      translation -0.0089 0.0279 0.0296
+      rotation 0 0 1 1.5708
+      children [
+        DEF kiri Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_kiri"
+      boundingObject USE kiri
+      physics Physics {
+      }
+    }
+    DEF ds_kanan DistanceSensor {
+      translation -0.0089 -0.0275 0.0296
+      rotation 0 0 1 -1.5707953071795862
+      children [
+        DEF kanan Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_kanan"
+      boundingObject USE kanan
+      physics Physics {
+      }
+    }
+    DEF ds_depan DistanceSensor {
+      translation 0.039 0 0.03
+      children [
+        DEF depan Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_depan"
+      boundingObject USE depan
+      physics Physics {
+      }
+    }
+    DEF motor_kanan_belakang HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor -0.0457 -0.0421 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kanan_belakang"
+        }
+        PositionSensor {
+          name "encoder_4"
+        }
+      ]
+      endPoint Solid {
+        translation -0.045700000000000074 -0.042100000000000026 -0.026829999999999993
+        rotation 0.9999999999999991 2.9694744783722826e-08 -3.0301405336668506e-08 1.570799997023463
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kiri_belakang.obj"
+            ]
+          }
+        ]
+        name "solid(4)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    DEF motor_kiri_belakang HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor -0.0457 0.04255 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kiri_belakang"
+        }
+        PositionSensor {
+          name "encoder_3"
+        }
+      ]
+      endPoint Solid {
+        translation -0.045700000000000005 0.04255 -0.02683
+        rotation 0.9999999999999998 -1.9788314143652505e-08 -1.6395574669364547e-08 4.712390000644207
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kiri_belakang.obj"
+            ]
+          }
+        ]
+        name "solid(3)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    DEF motor_kiri_depan HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0.02774 0.04255 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kiri_depan"
+        }
+        PositionSensor {
+          name "encoder_2"
+        }
+      ]
+      endPoint Solid {
+        translation 0.027739999999999994 0.04255 -0.02683000000000001
+        rotation 1 5.232982509546605e-09 8.670594778428963e-09 4.712390000796518
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kiri_depan.obj"
+            ]
+          }
+        ]
+        name "solid(2)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    DEF motor_kanan_depan HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0.02774 -0.0421 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kanan_depan"
+        }
+        PositionSensor {
+          name "encoder_1"
+        }
+      ]
+      endPoint Solid {
+        translation 0.027739999999999765 -0.042100000000000026 -0.026830000000000007
+        rotation 1 3.352021129614607e-10 -1.0581823860979873e-09 1.570789996806726
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kanan_depan.obj"
+            ]
+          }
+        ]
+        name "solid(1)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    Solid {
+      translation -0.0035 0.000126 -0.00627
+      children [
+        CadShape {
+          url [
+            "../model/new design/body.obj"
+          ]
+        }
+      ]
+    }
+    Pose {
+      children [
+        DEF body Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.125 0.065 0.076
+          }
+        }
+      ]
+    }
+  ]
+  name "robot1"
+  boundingObject USE body
+  physics Physics {
+  }
+  controller "robot_controller_node"
+  supervisor TRUE
+}
+DEF robot2 Robot {
+  translation -0.52 -0.08003 0.09
+  rotation 0 0 1 5.307156870259904e-06
+  children [
+    DEF leader_mark Solid {
+      translation 0.0044 0 0.035
+      rotation 0 0 1 -1.5708003061004252
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture {
+              url [
+                "../../ros2_ws/src/aruco/aruco_generate/marker_2.png"
+              ]
+            }
+            metalness 0
+          }
+          geometry Plane {
+            size 0.07 0.07
+          }
+        }
+      ]
+      name "solid(5)"
+      recognitionColors [
+        0 0 1
+      ]
+    }
+    Camera {
+      translation 0.06 0 0.004
+      children [
+        Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.005 0.005 0.006
+          }
+        }
+      ]
+      name "cam"
+      recognition Recognition {
+        frameColor 1 1 0
+      }
+    }
+    Emitter {
+      channel 1
+    }
+    Receiver {
+      channel 1
+    }
+    InertialUnit {
+      translation 0.021 0 0.043
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 0.5 1
+            transparency 1
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+      name "imu"
+    }
+    GPS {
+      children [
+        Solid {
+          translation 0 0 0.041
+          children [
+            Shape {
+              appearance PBRAppearance {
+                transparency 1
+              }
+              geometry Cylinder {
+                height 0.013
+                radius 0.006
+              }
+            }
+          ]
+        }
+      ]
+      name "global"
+    }
+    DEF ds_belakang DistanceSensor {
+      translation -0.0614 0 0.008
+      rotation 0 0 1 3.14159
+      children [
+        DEF belakang Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_belakang"
+      boundingObject USE belakang
+      physics Physics {
+      }
+    }
+    DEF ds_kiri DistanceSensor {
+      translation -0.0089 0.0279 0.0296
+      rotation 0 0 1 1.5708
+      children [
+        DEF kiri Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_kiri"
+      boundingObject USE kiri
+      physics Physics {
+      }
+    }
+    DEF ds_kanan DistanceSensor {
+      translation -0.0089 -0.0275 0.0296
+      rotation 0 0 1 -1.5707953071795862
+      children [
+        DEF kanan Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_kanan"
+      boundingObject USE kanan
+      physics Physics {
+      }
+    }
+    DEF ds_depan DistanceSensor {
+      translation 0.039 0 0.03
+      children [
+        DEF depan Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.002 0.002 0.002
+          }
+        }
+      ]
+      name "ds_depan"
+      boundingObject USE depan
+      physics Physics {
+      }
+    }
+    DEF motor_kanan_belakang HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor -0.0457 -0.0421 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kanan_belakang"
+        }
+        PositionSensor {
+          name "encoder_4"
+        }
+      ]
+      endPoint Solid {
+        translation -0.04569999999999996 -0.04210000000000008 -0.026829999999999993
+        rotation 0.9999999999999991 2.9462688120920852e-08 -3.006934782216423e-08 1.5707999970234663
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kiri_belakang.obj"
+            ]
+          }
+        ]
+        name "solid(4)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    DEF motor_kiri_belakang HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor -0.0457 0.04255 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kiri_belakang"
+        }
+        PositionSensor {
+          name "encoder_3"
+        }
+      ]
+      endPoint Solid {
+        translation -0.045700000000000005 0.04255 -0.02683
+        rotation 0.9999999999999998 -1.958775270241338e-08 -1.619501343274988e-08 4.712390000644208
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kiri_belakang.obj"
+            ]
+          }
+        ]
+        name "solid(3)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    DEF motor_kiri_depan HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0.02774 0.04255 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kiri_depan"
+        }
+        PositionSensor {
+          name "encoder_2"
+        }
+      ]
+      endPoint Solid {
+        translation 0.027739999999999994 0.04255 -0.02683000000000001
+        rotation 1 5.283186558893222e-09 8.720798776546895e-09 4.712390000796517
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kiri_depan.obj"
+            ]
+          }
+        ]
+        name "solid(2)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    DEF motor_kanan_depan HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0.02774 -0.0421 -0.02683
+      }
+      device [
+        RotationalMotor {
+          name "motor_kanan_depan"
+        }
+        PositionSensor {
+          name "encoder_1"
+        }
+      ]
+      endPoint Solid {
+        translation 0.027739999999999987 -0.042100000000000026 -0.026830000000000007
+        rotation 1 3.0084892979650146e-10 -1.023829420386523e-09 1.5707899968067258
+        children [
+          DEF roda Shape {
+            appearance PBRAppearance {
+              transparency 1
+            }
+            geometry Cylinder {
+              height 0.016
+              radius 0.02
+            }
+          }
+          CadShape {
+            url [
+              "../model/new design/kanan_depan.obj"
+            ]
+          }
+        ]
+        name "solid(1)"
+        boundingObject USE roda
+        physics Physics {
+        }
+      }
+    }
+    Solid {
+      translation -0.0035 0.000126 -0.00627
+      children [
+        CadShape {
+          url [
+            "../model/new design/body.obj"
+          ]
+        }
+      ]
+    }
+    Pose {
+      children [
+        DEF body Shape {
+          appearance PBRAppearance {
+            transparency 1
+          }
+          geometry Box {
+            size 0.125 0.065 0.076
+          }
+        }
+      ]
+    }
+  ]
+  name "robot2"
+  boundingObject USE body
+  physics Physics {
+  }
+  controller "<none>"
+  supervisor TRUE
+}
+DEF target Robot {
+  translation 0.44 -0.39 0.05
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.1 0.1 0.1
+      }
+    }
+  ]
+  name "target"
+  controller "<none>"
+  supervisor TRUE
+}
+Robot {
+  children [
+    Solid {
+      translation 0 0 0.01
+      name "maze"
+    }
+  ]
+  name "maze"
+  controller "<none>"
+  supervisor TRUE
+}
+DEF camera Robot {
+  translation 0 0 2.5
+  rotation 0 0 1 1.5708
+  children [
+    DEF camera Camera {
+      children [
+        Shape {
+          appearance PBRAppearance {
+            transparency 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.1 0.1 0.1
+          }
+        }
+      ]
+      width 800
+      height 600
+      recognition Recognition {
+      }
+    }
+  ]
+  name "camera"
+  controller "<extern>"
+  supervisor TRUE
+}
+Wall {
+  translation -0.15 -0.346 0
+  size 0.1 0.41 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.251 -0.35 0
+  name "wall(1)"
+  size 0.1 0.396 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.47 -0.2 0
+  name "wall(2)"
+  size 0.34 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.04 -0.5 0
+  name "wall(3)"
+  size 0.34 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -0.45 -0.19 0
+  name "wall(4)"
+  size 0.5 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.44 0.2 0
+  name "wall(5)"
+  size 1.13 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -0.35 0.51 0
+  name "wall(6)"
+  size 1.31 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -0.65 0.2 0
+  name "wall(7)"
+  size 0.1 0.7 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.65 0.4 0
+  name "wall(8)"
+  size 0.1 0.3 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation 0.65 -0.61 0
+  name "wall(9)"
+  size 0.1 0.3 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -0.78 -0.5 0
+  name "wall(10)"
+  size 0.45 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}

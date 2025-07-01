@@ -1,0 +1,2 @@
+[external]
+python = "vision_node.vision_node:main"

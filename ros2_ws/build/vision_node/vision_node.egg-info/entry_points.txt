@@ -1,0 +1,3 @@
+[console_scripts]
+vision_node = vision_node.vision_node:main
+

@@ -1,0 +1,3 @@
+[console_scripts]
+path_executor_node = path_executor.path_executor_node:main
+
