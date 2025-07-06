@@ -4,6 +4,7 @@ from std_msgs.msg import String, Float32, Bool, Int32MultiArray
 from geometry_msgs.msg import Point
 import math
 import time
+import heapq
 
 def world_to_grid(x_world, y_world, grid_width=40, grid_height=30):
     ARENA_WIDTH = 2.2
@@ -16,36 +17,50 @@ def world_to_grid(x_world, y_world, grid_width=40, grid_height=30):
     grid_y = grid_height - 1 - grid_y  # flip Y
     return grid_y, grid_x
 
-def a_star(grid, start, goal):
-    import heapq
-    import math
+class DStarLitePlanner:
+    def __init__(self, grid):
+        self.grid = grid
+        self.rows = len(grid)
+        self.cols = len(grid[0])
 
-    rows, cols = len(grid), len(grid[0])
-    open_set = []
-    heapq.heappush(open_set, (0, start))
-    came_from = {}
-    g_score = {start: 0}
-    def h(p1, p2): return math.hypot(p1[0]-p2[0], p1[1]-p2[1])
+    def heuristic(self, a, b):
+        return math.hypot(a[0] - b[0], a[1] - b[1])
 
-    while open_set:
-        _, current = heapq.heappop(open_set)
-        if current == goal:
-            path = []
-            while current:
-                path.append(current)
-                current = came_from.get(current)
-            return path[::-1], g_score[goal]
+    def get_neighbors(self, node):
+        neighbors = []
+        for dy, dx in [(-1,0), (1,0), (0,-1), (0,1), (-1,-1), (-1,1), (1,-1), (1,1)]:
+            ny, nx = node[0] + dy, node[1] + dx
+            if 0 <= ny < self.rows and 0 <= nx < self.cols and self.grid[ny][nx] == 0:
+                neighbors.append((ny, nx))
+        return neighbors
 
-        for dy, dx in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
-            ny, nx = current[0]+dy, current[1]+dx
-            if 0 <= ny < rows and 0 <= nx < cols and grid[ny][nx] == 0:
-                step = 1.414 if dx != 0 and dy != 0 else 1.0
-                tentative_g = g_score[current] + step
-                if tentative_g < g_score.get((ny,nx), float('inf')):
-                    came_from[(ny,nx)] = current
-                    g_score[(ny,nx)] = tentative_g
-                    heapq.heappush(open_set, (tentative_g + h((ny,nx), goal), (ny,nx)))
-    return [], float('inf')
+    def plan(self, start, goal):
+        g_score = {start: 0}
+        f_score = {start: self.heuristic(start, goal)}
+        came_from = {}
+
+        open_set = [(f_score[start], start)]
+        heapq.heapify(open_set)
+
+        while open_set:
+            _, current = heapq.heappop(open_set)
+
+            if current == goal:
+                path = []
+                while current:
+                    path.append(current)
+                    current = came_from.get(current)
+                return path[::-1], g_score[goal]
+
+            for neighbor in self.get_neighbors(current):
+                tentative_g = g_score[current] + self.heuristic(current, neighbor)
+                if tentative_g < g_score.get(neighbor, float('inf')):
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g
+                    f_score[neighbor] = tentative_g + self.heuristic(neighbor, goal)
+                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+        return [], float('inf')
 
 class RoleManagerNode(Node):
     def __init__(self):
@@ -133,10 +148,10 @@ class RoleManagerNode(Node):
         # Hitung path dari tiap robot ke goal
         goal_grid = world_to_grid(self.goal_position[0], self.goal_position[1])
         distances = {}
-
+        planner = DStarLitePlanner(self.grid)
         for rid, pos in self.robot_positions.items():
             robot_grid = world_to_grid(pos[0], pos[1])
-            path, cost = a_star(self.grid, robot_grid, goal_grid)
+            path, cost = planner.plan(robot_grid, goal_grid)
             distances[rid] = cost
 
         sorted_robots = sorted(distances.items(), key=lambda x: x[1])
@@ -175,6 +190,10 @@ class RoleManagerNode(Node):
 
 
     def publish_roles_and_goals(self):
+        # if self.current_leader not in self.robot_positions:
+        #     self.get_logger().warn(f"⚠️ Cannot publish goals, leader robot{self.current_leader} has no position.")
+        #     return
+
         leader_pos = self.robot_positions[self.current_leader]
 
         for rid in self.robot_ids:

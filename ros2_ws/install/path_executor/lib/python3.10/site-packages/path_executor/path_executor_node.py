@@ -44,6 +44,11 @@ class PathExecutorNode(Node):
         self.pause_until = None
         self.target_index = 0
 
+        self.last_waypoint_time = time.time()
+        self.max_waypoint_duration = 4.0  # detik (ubah sesuai kebutuhan)
+        self.stuck_pub = self.create_publisher(Bool, f'/robot{self.robot_id}/is_stuck', 10)
+        self.stuck_status = False  # untuk menghindari spam publish
+
         self.timer = self.create_timer(0.02, self.control_loop)
         self.get_logger().info(f"Path Follower Node started for robot {self.robot_id}.")
 
@@ -129,7 +134,7 @@ class PathExecutorNode(Node):
                 gx, gy = self.goal_position
                 distance = sqrt((gx - rx)**2 + (gy - ry)**2)
 
-                if distance > 4.0:
+                if distance > 1.0:
                     dx = gx - rx
                     dy = gy - ry
                     desired_angle = atan2(dy, dx)
@@ -177,7 +182,17 @@ class PathExecutorNode(Node):
             self.target_index += 1
             self.cmd_pub.publish(Twist())  # stop sejenak
             self.pause_until = time.time() + 0.2  # Delay 0.2 detik
+            self.stuck_status = False
+            self.stuck_pub.publish(Bool(data=False))
             return
+        
+        # --- Deteksi jika terlalu lama di waypoint ---
+        if self.last_waypoint_time and (time.time() - self.last_waypoint_time) > self.max_waypoint_duration:
+            if not self.stuck_status:
+                self.get_logger().warn(f"[R{self.robot_id}] ⚠️ STUCK: terlalu lama di waypoint {self.target_index + 1}")
+                self.stuck_status = True
+                self.stuck_pub.publish(Bool(data=True))
+        #     return  # berhenti kontrol dulu saat stuck
 
         twist = Twist()
         
@@ -270,7 +285,17 @@ class PathExecutorNode(Node):
             self.target_index += 1
             self.cmd_pub.publish(Twist())  # stop sejenak
             self.pause_until = time.time() + 0.2  # Delay 0.2 detik
+            self.stuck_status = False
+            self.stuck_pub.publish(Bool(data=False))
             return
+        
+        # --- Deteksi jika terlalu lama di waypoint ---
+        if self.last_waypoint_time and (time.time() - self.last_waypoint_time) > self.max_waypoint_duration:
+            if not self.stuck_status:
+                self.get_logger().warn(f"[R{self.robot_id}] ⚠️ STUCK: terlalu lama di waypoint {self.target_index + 1}")
+                self.stuck_status = True
+                self.stuck_pub.publish(Bool(data=True))
+        #     return  # berhenti kontrol dulu saat stuck
 
         twist = Twist()
         

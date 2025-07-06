@@ -6,8 +6,8 @@ import random
 from controller import Supervisor
 
 # Konfigurasi arena dan grid
-ARENA_WIDTH = 1.9     # Total lebar arena (x)
-ARENA_HEIGHT = 1.1    # Total tinggi arena (y)
+ARENA_WIDTH = 1.7     # Total lebar arena (x)
+ARENA_HEIGHT = 0.9    # Total tinggi arena (y)
 X_MIN = -ARENA_WIDTH / 2   # = -0.95
 Y_MIN = -ARENA_HEIGHT / 2  # = -0.55
 GRID_WIDTH = 40

@@ -56,7 +56,7 @@ def inflate_obstacles(grid, radius=INFLATE_RADIUS):
                             inflated[ny][nx] = 1
     return inflated
 
-def find_offset_goal(leader_pos, follower_pos, other_follower_positions, distance_cells=3):
+def find_offset_goal(leader_pos, follower_pos, other_follower_positions, distance_cells):
     ly, lx = leader_pos
     fy, fx = follower_pos
 
@@ -124,7 +124,7 @@ class PathPlannerNode(Node):
         self.colored_obstacles = set()
         self.obstacle_updated = False
         self.current_role = "follower"
-        self.distance_cells = 5
+        self.distance_cells = 3
         self.last_pos = None
         self.last_move_time = time.time()
         self.stuck_timeout = 2.0  # detik, bisa kamu ubah sesuai eksperimen

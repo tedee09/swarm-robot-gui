@@ -11,7 +11,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0944
-  position 8.970635716963076e-07 -1.8677260691865143e-06 3.0676956749157216
+  position 1.167482557356232e-06 -1.5972999277121338e-06 2.5266018265384056
 }
 TexturedBackground {
 }
@@ -361,7 +361,7 @@ DEF robot1 Robot {
   supervisor TRUE
 }
 DEF robot2 Robot {
-  translation 0.59 -0.460023 0.09
+  translation 0.8 -0.290023 0.09
   rotation 0 0 1 3.141592653589793
   children [
     DEF mark Solid {
@@ -698,7 +698,7 @@ DEF robot2 Robot {
   supervisor TRUE
 }
 DEF robot3 Robot {
-  translation -0.25 0.149971 0.09
+  translation -0.84 -0.300029 0.09
   rotation 0 0 1 -1.5707896938995747
   children [
     DEF mark Solid {
@@ -981,7 +981,7 @@ DEF robot3 Robot {
       ]
       endPoint Solid {
         translation 0.027739999999999987 -0.042099999999999915 -0.026829999999999986
-        rotation 1 3.061009359514839e-10 -1.0290811877597745e-09 1.570789996806724
+        rotation 1 3.06100935951484e-10 -1.0290811877597745e-09 1.570789996806724
         children [
           DEF roda Shape {
             appearance PBRAppearance {
@@ -1372,7 +1372,7 @@ DEF robot4 Robot {
   supervisor TRUE
 }
 DEF robot5 Robot {
-  translation -0.480249 0.144646 0.09
+  translation 0.281375 -0.439772 0.09
   rotation 0 0 1 2.4870896938995743
   children [
     DEF mark Solid {
@@ -1814,7 +1814,18 @@ DEF camera Robot {
   supervisor TRUE
 }
 Wall {
-  translation 0.84 0.41 0
+  translation 0.27 0.28 0
+  size 0.1 0.1 0.1
+  appearance Roughcast {
+    colorOverride 1 1 0
+    textureTransform TextureTransform {
+      scale 2.4 1
+    }
+  }
+}
+Wall {
+  translation -0.15 0.07 0
+  name "wall(1)"
   size 0.1 0.2 0.1
   appearance Roughcast {
     colorOverride 1 1 0
@@ -1824,18 +1835,7 @@ Wall {
   }
 }
 Wall {
-  translation 0.01 0.36 0
-  name "wall(1)"
-  size 0.2 0.1 0.1
-  appearance Roughcast {
-    colorOverride 1 1 0
-    textureTransform TextureTransform {
-      scale 2.4 1
-    }
-  }
-}
-Wall {
-  translation -0.56 -0.15 0
+  translation -0.67 0.31 0
   name "wall(2)"
   size 0.1 0.1 0.1
   appearance Roughcast {
