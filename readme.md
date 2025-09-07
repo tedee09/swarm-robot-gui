@@ -7,7 +7,7 @@ Dengan project ini, kamu dapat mempelajari dan menjalankan simulasi pergerakan r
 
 DEMO SIMULASI
 -------------
-https://github.com/user-attachments/assets/9ab89f9f-fc99-4a4c-8ef2-0145ca663d83
+![Image](https://github.com/user-attachments/assets/7874a16f-f11b-4c1c-8061-7b7766401114)
 
 INSTALASI & PERSIAPAN
 ---------------------
