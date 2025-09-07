@@ -7,11 +7,6 @@ Dengan project ini, kamu dapat mempelajari dan menjalankan simulasi pergerakan r
 
 DEMO SIMULASI
 -------------
-1. Menjalankan simulasi swarm robot:
-   (Run Simulation GIF di sini -> ./assets/run_simulation.gif)
-
-2. Saat robot bergerak dalam simulasi:
-   (Robot Movement GIF di sini -> ./assets/robot_movement.gif)
 
 
 INSTALASI & PERSIAPAN
