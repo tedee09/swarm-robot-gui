@@ -2,7 +2,7 @@ SWARM ROBOT SIMULATION
 ======================
 
 Project ini merupakan simulasi Swarm Robot berbasis ROS 2, yang memanfaatkan Webots, Gazebo, dan RViz2 untuk visualisasi serta pengendalian robot.
-Dengan project ini, kamu dapat mempelajari dan menjalankan simulasi pergerakan robot swarm secara interaktif.
+Dengan project ini, kita dapat mempelajari dan menjalankan simulasi pergerakan robot swarm secara interaktif.
 
 
 DEMO SIMULASI
@@ -12,21 +12,29 @@ DEMO SIMULASI
 INSTALASI & PERSIAPAN
 ---------------------
 1. Clone repository ini atau download dalam bentuk .zip
-   git clone https://github.com/username/swarm-robot-simulation.git
+   ```
+   git clone https://github.com/tedee09/simulation_swarm_ros2_webots.git
+   ```
 
 2. Pindahkan project ke Home Directory
-   mv swarm-robot-simulation ~/swarm
+   ```
+   mv simulation_swarm_ros2_webots ~/swarm
+   ```
 
 3. Masuk ke workspace ROS2
+   ```
    cd ~/swarm/ros2_ws
+   ```
 
 
 MENJALANKAN SIMULASI
 --------------------
 Untuk memulai simulasi, jalankan perintah berikut:
 
+   ```
    source install/setup.bash
    ros2 launch swarm_launch swarm_simulation.launch.py
+   ```
 
 Jika berhasil, maka secara otomatis akan terbuka:
 - RViz2   : Visualisasi sensor & robot
@@ -45,21 +53,5 @@ PANDUAN PENGGUNAAN
 FITUR
 -----
 - Simulasi multi-robot swarm
-- Integrasi dengan Gazebo, Webots, dan RViz2
-- Mendukung pengembangan algoritma path planning & koordinasi robot
-- Mudah dijalankan hanya dengan satu perintah
-
-
-KONTRIBUSI
-----------
-Kontribusi selalu terbuka! Jika ingin menambahkan fitur baru atau memperbaiki bug:
-1. Fork repository ini.
-2. Buat branch baru.
-3. Lakukan perubahan.
-4. Ajukan Pull Request.
-
-
-LISENSI
--------
-Project ini dirilis di bawah lisensi MIT.
-Silakan cek file LICENSE untuk detail lebih lanjut.
+- Integrasi dengan Gazebo, Webots, OpenCV, RViz2
+- Terdapat algoritma path planning & koordinasi robot
