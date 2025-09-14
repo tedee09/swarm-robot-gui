@@ -13,8 +13,8 @@ from filterpy.kalman import KalmanFilter
 # constants
 ARENA_WIDTH = 1.9     # Total lebar arena (x)
 ARENA_HEIGHT = 1.1    # Total tinggi arena (y)
-X_MIN = -ARENA_WIDTH / 2   # = -0.95
-Y_MIN = -ARENA_HEIGHT / 2  # = -0.55
+X_MIN = -ARENA_WIDTH / 2   # (kiri)
+Y_MIN = -ARENA_HEIGHT / 2  # (bawah)
 GRID_WIDTH = 40
 GRID_HEIGHT = 30
 INFLATE_RADIUS = 2.0
@@ -56,7 +56,6 @@ class VisionNode(Node):
 
         # Publisher
         self.leader_goal_pub = self.create_publisher(Point, '/leader_goal_position', 10)
-        # self.robot_pub = self.create_publisher(Point, 'robot_position', 10)
         self.obstacle_pub = self.create_publisher(Int32MultiArray, '/colored_obstacle_grids', 10)
         self.marker_pub = self.create_publisher(MarkerArray, '/obstacle_markers', 10)
         self.robots_marker_pub = self.create_publisher(MarkerArray, '/robot_markers', 10)
@@ -71,7 +70,7 @@ class VisionNode(Node):
         self.kalman_filters = {}
         for rid in self.robot_ids:
             kf = KalmanFilter(dim_x=4, dim_z=2)
-            dt = 1/10  # asumsi 10 FPS (bisa diatur sesuai fps Webots Anda)
+            dt = 1/10  # set 10 FPS aja
             
             # State: [x, y, vx, vy]
             kf.F = np.array([[1, 0, dt, 0],
@@ -82,7 +81,7 @@ class VisionNode(Node):
             kf.H = np.array([[1, 0, 0, 0],
                             [0, 1, 0, 0]])
             
-            kf.P *= 10.0   # inisialisasi ketidakpastian
+            kf.P *= 10.0  # inisialisasi ketidakpastian
             kf.R *= 0.2   # noise pengukuran (semakin kecil = lebih percaya sensor)
             kf.Q *= 0.05  # noise proses (semakin besar = lebih adaptif terhadap perubahan cepat)
             
@@ -93,7 +92,7 @@ class VisionNode(Node):
         self.aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.aruco_params = aruco.DetectorParameters_create()
 
-        # HSV bounds for yellow (you can adjust later)
+        # HSV bounds for yellow
         self.lower_yellow = np.array([20, 100, 100])
         self.upper_yellow = np.array([30, 255, 255])
 

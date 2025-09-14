@@ -30,12 +30,9 @@ class CmdVelController(Node):
 
         # Get motors
         self.motor_kanan_depan = self.get_motor_safe("motor_kanan_depan")
-        self.motor_kanan_belakang = self.get_motor_safe("motor_kanan_belakang")
         self.motor_kiri_depan = self.get_motor_safe("motor_kiri_depan")
-        self.motor_kiri_belakang = self.get_motor_safe("motor_kiri_belakang")
 
-        self.motors = [self.motor_kanan_depan, self.motor_kanan_belakang,
-                       self.motor_kiri_depan, self.motor_kiri_belakang]
+        self.motors = [self.motor_kanan_depan, self.motor_kiri_depan]
         for m in self.motors:
             m.setPosition(float('inf'))
             m.setVelocity(0.0)
@@ -48,7 +45,7 @@ class CmdVelController(Node):
             print(f"❌ IMU init failed: {e}")
             exit(1)
 
-        # GPS (opsional)
+        # GPS
         if self.enable_gps:
             try:
                 self.gps = self.robot.getDevice("global")
@@ -105,9 +102,7 @@ class CmdVelController(Node):
             v_right = max(min(v_right, self.max_speed), -self.max_speed)
 
             self.motor_kiri_depan.setVelocity(v_left)
-            self.motor_kiri_belakang.setVelocity(v_left)
             self.motor_kanan_depan.setVelocity(v_right)
-            self.motor_kanan_belakang.setVelocity(v_right)
 
             print(f"[{self.robot_name}] 🔁 L={v_left:.2f}, R={v_right:.2f}, Yaw={yaw:.2f}")
 

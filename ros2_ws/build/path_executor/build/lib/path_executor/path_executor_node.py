@@ -13,12 +13,12 @@ class PathExecutorNode(Node):
         
         self.declare_parameter('robot_id', 1)
         self.declare_parameter('speed', 1.5)
-        self.declare_parameter('heading_kp', 0.8)
+        self.declare_parameter('heading_kp', 1.0)
         self.declare_parameter('linear_kp', 1.0)
         self.speed = self.get_parameter('speed').get_parameter_value().double_value
         self.linear_kp = self.get_parameter('linear_kp').get_parameter_value().double_value
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().integer_value
-        self.other_robots = [i for i in range(1, 6) if i != self.robot_id]  # ganti sesuai jumlah robot
+        self.other_robots = [i for i in range(1, 6) if i != self.robot_id] 
         self.heading_kp = self.get_parameter('heading_kp').get_parameter_value().double_value
 
         self.role_sub = self.create_subscription(String, f'/robot{self.robot_id}/assigned_role', self.role_callback, 10)
@@ -203,12 +203,12 @@ class PathExecutorNode(Node):
             self.get_logger().info("Belum sejajar, hanya berputar.")
         # Jika heading cukup bagus → boleh maju, tapi tetap hati-hati
         elif abs(error_angle) > 0.2:
-            base_speed = self.linear_kp * distance
-            twist.linear.x = min(base_speed, 0.3)  # batas hati-hati
+            base_speed = min(self.speed, self.linear_kp * distance)
+            twist.linear.x = min(base_speed, 0.7)  # batas hati-hati
             twist.angular.z = self.clamp_angular_speed(self.heading_kp * error_angle, 0.1, 0.4)
             self.get_logger().info("🚶 Bergerak hati-hati sambil koreksi heading.")
         else:
-            base_speed = self.linear_kp * distance
+            base_speed = min(self.speed, self.linear_kp * distance)
             twist.linear.x = min(base_speed, 0.5)
             twist.angular.z = self.clamp_angular_speed(0.3 * error_angle, 0.05, 0.3)
             self.get_logger().info("✅ Sejajar, bergerak ke waypoint.")
@@ -306,12 +306,12 @@ class PathExecutorNode(Node):
             self.get_logger().info("Belum sejajar, hanya berputar.")
         # Jika heading cukup bagus → boleh maju, tapi tetap hati-hati
         elif abs(error_angle) > 0.2:
-            base_speed = self.linear_kp * distance
-            twist.linear.x = min(base_speed, 0.3)  # batas hati-hati
+            base_speed = min(self.speed, self.linear_kp * distance)
+            twist.linear.x = min(base_speed, 0.7)  # batas hati-hati
             twist.angular.z = self.clamp_angular_speed(self.heading_kp * error_angle, 0.1, 0.4)
             self.get_logger().info("🚶 Bergerak hati-hati sambil koreksi heading.")
         else:
-            base_speed = self.linear_kp * distance
+            base_speed = min(self.speed, self.linear_kp * distance)
             twist.linear.x = min(base_speed, 0.5)
             twist.angular.z = self.clamp_angular_speed(0.3 * error_angle, 0.05, 0.3)
             self.get_logger().info("✅ Sejajar, bergerak ke waypoint.")

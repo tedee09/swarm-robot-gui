@@ -12,7 +12,7 @@ for marker_id in range(8):
     marker_image = cv2.aruco.drawMarker(aruco_dict, marker_id, marker_size)
 
     # Tambahkan margin putih
-    border_size = 20
+    border_size = 30
     marker_image_with_border = cv2.copyMakeBorder(
         marker_image, border_size, border_size, border_size, border_size,
         cv2.BORDER_CONSTANT, value=255
@@ -21,3 +21,8 @@ for marker_id in range(8):
     filename = f"marker_{marker_id}.png"
     cv2.imwrite(filename, marker_image_with_border)
     print(f"Marker {marker_id} disimpan sebagai {filename}")
+
+
+# untuk jalankan perintah:
+# cd ~/swarm/ros2_ws src/aruco
+# python3 arUco_multiGenerate.py
