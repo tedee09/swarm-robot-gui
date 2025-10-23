@@ -1,0 +1,21 @@
+[1.630s] Invoking command in '/home/tedee/swarm/ros2_ws/src/vision_node': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/vision_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/vision_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_node build --build-base /home/tedee/swarm/ros2_ws/build/vision_node/build install --record /home/tedee/swarm/ros2_ws/build/vision_node/install.log --single-version-externally-managed install_data
+[1.860s] running egg_info
+[1.861s] writing ../../build/vision_node/vision_node.egg-info/PKG-INFO
+[1.862s] writing dependency_links to ../../build/vision_node/vision_node.egg-info/dependency_links.txt
+[1.862s] writing entry points to ../../build/vision_node/vision_node.egg-info/entry_points.txt
+[1.862s] writing requirements to ../../build/vision_node/vision_node.egg-info/requires.txt
+[1.862s] writing top-level names to ../../build/vision_node/vision_node.egg-info/top_level.txt
+[1.866s] reading manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[1.867s] writing manifest file '../../build/vision_node/vision_node.egg-info/SOURCES.txt'
+[1.867s] running build
+[1.867s] running build_py
+[1.870s] running install
+[1.870s] running install_lib
+[1.872s] running install_data
+[1.873s] running install_egg_info
+[1.875s] removing '/home/tedee/swarm/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node-0.0.0-py3.10.egg-info' (and everything under it)
+[1.875s] Copying ../../build/vision_node/vision_node.egg-info to /home/tedee/swarm/ros2_ws/install/vision_node/lib/python3.10/site-packages/vision_node-0.0.0-py3.10.egg-info
+[1.876s] running install_scripts
+[1.894s] Installing vision_node script to /home/tedee/swarm/ros2_ws/install/vision_node/lib/vision_node
+[1.896s] writing list of installed files to '/home/tedee/swarm/ros2_ws/build/vision_node/install.log'
+[1.942s] Invoked command in '/home/tedee/swarm/ros2_ws/src/vision_node' returned '0': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/vision_node/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/vision_node/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/vision_node build --build-base /home/tedee/swarm/ros2_ws/build/vision_node/build install --record /home/tedee/swarm/ros2_ws/build/vision_node/install.log --single-version-externally-managed install_data

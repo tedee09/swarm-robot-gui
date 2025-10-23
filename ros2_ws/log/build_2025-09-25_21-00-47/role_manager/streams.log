@@ -1,0 +1,24 @@
+[3.124s] Invoking command in '/home/tedee/swarm/ros2_ws/src/role_manager': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/role_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/role_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/role_manager build --build-base /home/tedee/swarm/ros2_ws/build/role_manager/build install --record /home/tedee/swarm/ros2_ws/build/role_manager/install.log --single-version-externally-managed install_data
+[3.670s] running egg_info
+[3.670s] writing ../../build/role_manager/role_manager.egg-info/PKG-INFO
+[3.671s] writing dependency_links to ../../build/role_manager/role_manager.egg-info/dependency_links.txt
+[3.671s] writing entry points to ../../build/role_manager/role_manager.egg-info/entry_points.txt
+[3.671s] writing requirements to ../../build/role_manager/role_manager.egg-info/requires.txt
+[3.672s] writing top-level names to ../../build/role_manager/role_manager.egg-info/top_level.txt
+[3.675s] reading manifest file '../../build/role_manager/role_manager.egg-info/SOURCES.txt'
+[3.676s] writing manifest file '../../build/role_manager/role_manager.egg-info/SOURCES.txt'
+[3.676s] running build
+[3.676s] running build_py
+[3.676s] copying role_manager/role_manager_node.py -> /home/tedee/swarm/ros2_ws/build/role_manager/build/lib/role_manager
+[3.677s] running install
+[3.677s] running install_lib
+[3.678s] copying /home/tedee/swarm/ros2_ws/build/role_manager/build/lib/role_manager/role_manager_node.py -> /home/tedee/swarm/ros2_ws/install/role_manager/lib/python3.10/site-packages/role_manager
+[3.680s] byte-compiling /home/tedee/swarm/ros2_ws/install/role_manager/lib/python3.10/site-packages/role_manager/role_manager_node.py to role_manager_node.cpython-310.pyc
+[3.682s] running install_data
+[3.682s] running install_egg_info
+[3.686s] removing '/home/tedee/swarm/ros2_ws/install/role_manager/lib/python3.10/site-packages/role_manager-0.0.0-py3.10.egg-info' (and everything under it)
+[3.686s] Copying ../../build/role_manager/role_manager.egg-info to /home/tedee/swarm/ros2_ws/install/role_manager/lib/python3.10/site-packages/role_manager-0.0.0-py3.10.egg-info
+[3.688s] running install_scripts
+[3.729s] Installing role_manager_node script to /home/tedee/swarm/ros2_ws/install/role_manager/lib/role_manager
+[3.729s] writing list of installed files to '/home/tedee/swarm/ros2_ws/build/role_manager/install.log'
+[3.830s] Invoked command in '/home/tedee/swarm/ros2_ws/src/role_manager' returned '0': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/role_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/role_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/role_manager build --build-base /home/tedee/swarm/ros2_ws/build/role_manager/build install --record /home/tedee/swarm/ros2_ws/build/role_manager/install.log --single-version-externally-managed install_data

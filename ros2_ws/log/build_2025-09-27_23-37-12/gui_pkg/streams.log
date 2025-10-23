@@ -1,0 +1,22 @@
+[4.409s] Invoking command in '/home/tedee/swarm/ros2_ws/src/gui_pkg': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/gui_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/gui_pkg build --build-base /home/tedee/swarm/ros2_ws/build/gui_pkg/build install --record /home/tedee/swarm/ros2_ws/build/gui_pkg/install.log --single-version-externally-managed install_data
+[5.442s] running egg_info
+[5.444s] writing ../../build/gui_pkg/gui_pkg.egg-info/PKG-INFO
+[5.446s] writing dependency_links to ../../build/gui_pkg/gui_pkg.egg-info/dependency_links.txt
+[5.447s] writing entry points to ../../build/gui_pkg/gui_pkg.egg-info/entry_points.txt
+[5.450s] writing requirements to ../../build/gui_pkg/gui_pkg.egg-info/requires.txt
+[5.451s] writing top-level names to ../../build/gui_pkg/gui_pkg.egg-info/top_level.txt
+[5.453s] reading manifest file '../../build/gui_pkg/gui_pkg.egg-info/SOURCES.txt'
+[5.454s] writing manifest file '../../build/gui_pkg/gui_pkg.egg-info/SOURCES.txt'
+[5.454s] running build
+[5.455s] running build_py
+[5.455s] running install
+[5.456s] running install_lib
+[5.463s] running install_data
+[5.464s] running install_egg_info
+[5.467s] removing '/home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[5.468s] Copying ../../build/gui_pkg/gui_pkg.egg-info to /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg-0.0.0-py3.10.egg-info
+[5.470s] running install_scripts
+[5.536s] Installing bridge script to /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/gui_pkg
+[5.536s] Installing gui_pkg script to /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/gui_pkg
+[5.537s] writing list of installed files to '/home/tedee/swarm/ros2_ws/build/gui_pkg/install.log'
+[5.621s] Invoked command in '/home/tedee/swarm/ros2_ws/src/gui_pkg' returned '0': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/gui_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/gui_pkg build --build-base /home/tedee/swarm/ros2_ws/build/gui_pkg/build install --record /home/tedee/swarm/ros2_ws/build/gui_pkg/install.log --single-version-externally-managed install_data

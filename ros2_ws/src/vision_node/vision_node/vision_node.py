@@ -9,6 +9,8 @@ from std_msgs.msg import Int32MultiArray, Float32
 from visualization_msgs.msg import Marker, MarkerArray
 import math
 from filterpy.kalman import KalmanFilter
+from sensor_msgs.msg import Imu
+import time
 
 # constants
 ARENA_WIDTH = 1.9     # Total lebar arena (x)
@@ -17,6 +19,8 @@ X_MIN = -ARENA_WIDTH / 2   # (kiri)
 Y_MIN = -ARENA_HEIGHT / 2  # (bawah)
 GRID_WIDTH = 40
 GRID_HEIGHT = 30
+GRID_WIDTH_OVERLAY = 40
+GRID_HEIGHT_OVERLAY = 30
 INFLATE_RADIUS = 2.0
 
 # Konversi dari pixel ke koordinat dunia (hasil regresi 4 titik kalibrasi)
@@ -40,12 +44,37 @@ def grid_to_world(grid_y, grid_x, grid_width=GRID_WIDTH, grid_height=GRID_HEIGHT
     y_world = Y_MIN + (grid_height - 1 - grid_y + 0.5) * cell_height
     return x_world, y_world
 
+def wrap_pi(a: float) -> float:
+    while a > math.pi:
+        a -= 2 * math.pi
+    while a < -math.pi:
+        a += 2 * math.pi
+    return a
+
 class VisionNode(Node):
     def __init__(self):
         super().__init__('vision_node')
 
-        self.declare_parameter("robot_ids", [1, 2, 3, 4, 5])
-        self.robot_ids = self.get_parameter("robot_ids").get_parameter_value().integer_array_value
+        self.declare_parameter("robot_ids", [1, 2, 3, 4])
+        self.declare_parameter("image_to_world_yaw_deg", 0.0)
+        self.declare_parameter("marker_yaw_offset_deg", 0.0)
+        self.declare_parameter("alpha_yaw", 0.75)
+        self.declare_parameter("publish_nan_if_missing", False)
+
+        self.robot_ids = list(self.get_parameter("robot_ids").get_parameter_value().integer_array_value)
+        self.img2world = math.radians(float(self.get_parameter("image_to_world_yaw_deg").value))
+        self.marker_offset = math.radians(float(self.get_parameter("marker_yaw_offset_deg").value))
+        self.alpha_yaw = float(self.get_parameter("alpha_yaw").value)
+        self.pub_nan = bool(self.get_parameter("publish_nan_if_missing").value)
+        
+        self.declare_parameter("yaw_latency_comp_s", 0.03)  # 20–50 ms biasanya pas
+        self.latency_comp = float(self.get_parameter("yaw_latency_comp_s").value)
+        self.yaw_prev = {rid: None for rid in self.robot_ids}
+        self.t_prev   = {rid: None for rid in self.robot_ids}
+        self._yaw_last_ok = 0.0
+
+        self.declare_parameter('use_aruco', True)
+        self.declare_parameter('hold_sec', 0.15)  # dari 0.7 → 0.15 biar tidak “nahan” sampel lama
 
         self.robot = Robot()
         self.timestep = int(self.robot.getBasicTimeStep())
@@ -60,32 +89,31 @@ class VisionNode(Node):
         self.marker_pub = self.create_publisher(MarkerArray, '/obstacle_markers', 10)
         self.robots_marker_pub = self.create_publisher(MarkerArray, '/robot_markers', 10)
         self.leader_goal_marker_pub = self.create_publisher(MarkerArray, '/leader_goal_marker', 10)
-
-        self.robot_position_pubs = {
-            rid: self.create_publisher(Point, f'/robot{rid}/robot_position', 10) for rid in self.robot_ids
-        }
-
+        self.robot_position_pubs = {rid: self.create_publisher(Point, f'/robot{rid}/robot_position', 10) for rid in self.robot_ids}
+        self.imu_publishers = {rid: self.create_publisher(Imu, f'/robot{rid}/imu', 10) for rid in self.robot_ids}
+        self.aruco_yaw_publishers = {rid: self.create_publisher(Float32, f'/robot{rid}/aruco/yaw', 10) for rid in self.robot_ids}
+        self.heading_publishers = {rid: self.create_publisher(Float32, f'/robot{rid}/robot_heading', 10) for rid in self.robot_ids}
+        self.all_follower_pub = self.create_publisher(Int32MultiArray, '/all_follower_positions', 10)
+        self.yaw_filtered = {rid: None for rid in self.robot_ids}
+        self.last_heading_log_ts = {rid: 0.0 for rid in self.robot_ids}
+        self.last_grid_pos = {rid: None for rid in self.robot_ids}
+        self.last_seen_grid = {rid: 0.0 for rid in self.robot_ids}
+        self.declare_parameter('follower_hold_sec', 0.4)
+        self.follower_hold_sec = float(self.get_parameter('follower_hold_sec').value)
         self.previous_positions = {rid: None for rid in self.robot_ids}
         self.last_goal_seen_time = 0
+        self._last_ts = None
+        self._yaw_aruco = None
+        self._t_aruco = 0.0
         self.kalman_filters = {}
         for rid in self.robot_ids:
             kf = KalmanFilter(dim_x=4, dim_z=2)
-            dt = 1/10  # set 10 FPS aja
-            
-            # State: [x, y, vx, vy]
-            kf.F = np.array([[1, 0, dt, 0],
-                            [0, 1, 0, dt],
-                            [0, 0, 1, 0],
-                            [0, 0, 0, 1]])
-            
-            kf.H = np.array([[1, 0, 0, 0],
-                            [0, 1, 0, 0]])
-            
-            kf.P *= 10.0  # inisialisasi ketidakpastian
-            kf.R *= 0.2   # noise pengukuran (semakin kecil = lebih percaya sensor)
-            kf.Q *= 0.05  # noise proses (semakin besar = lebih adaptif terhadap perubahan cepat)
-            
-            kf.x = np.array([[0], [0], [0], [0]])  # inisialisasi posisi awal
+            kf.F = np.eye(4)                      # identitas dulu (dt diisi per frame)
+            kf.H = np.array([[1,0,0,0],[0,1,0,0]])
+            kf.P *= 10.0
+            kf.R = np.eye(2) * 0.2
+            kf.Q = np.eye(4) * 0.05               # placeholder; ditimpa per frame
+            kf.x = np.array([[0.0],[0.0],[0.0],[0.0]])
             self.kalman_filters[rid] = kf
 
         # ArUco config
@@ -96,10 +124,51 @@ class VisionNode(Node):
         self.lower_yellow = np.array([20, 100, 100])
         self.upper_yellow = np.array([30, 255, 255])
 
+        # ... di akhir __init__ setelah HSV bounds:
+        self.declare_parameter('show_grid', True)
+        self.declare_parameter('grid_major_every', 5)
+        self.declare_parameter('grid_alpha', 0.30)
+        self.declare_parameter('grid_thickness', 1)
+        self.declare_parameter('grid_major_thickness', 2)
+
+        self.show_grid = bool(self.get_parameter('show_grid').value)
+        self.grid_major_every = int(self.get_parameter('grid_major_every').value)
+        self.grid_alpha = float(self.get_parameter('grid_alpha').value)
+        self.grid_thickness = int(self.get_parameter('grid_thickness').value)
+        self.grid_major_thickness = int(self.get_parameter('grid_major_thickness').value)
+
+    def get_heading_now(self):
+        hold_sec = self.get_parameter('hold_sec').get_parameter_value().double_value
+        now = time.time()
+        if (self._yaw_aruco is not None) and (now - self._t_aruco) < hold_sec:
+            self._yaw_last_ok = wrap_pi(self._yaw_aruco)
+        return self._yaw_last_ok
+
+    def overlay_grid(self, image, cols=GRID_WIDTH_OVERLAY, rows=GRID_HEIGHT_OVERLAY):
+        h, w = image.shape[:2]
+        cell_w = w / float(cols)
+        cell_h = h / float(rows)
+
+        grid_layer = np.zeros_like(image)
+        color = (80, 80, 80)  # satu warna untuk semua garis
+        thickness = self.grid_thickness
+
+        # Garis vertikal (semua tipis)
+        for c in range(1, cols):
+            x = int(round(c * cell_w))
+            cv2.line(grid_layer, (x, 0), (x, h), color, thickness, lineType=cv2.LINE_AA)
+
+        # Garis horizontal (semua tipis)
+        for r in range(1, rows):
+            y = int(round(r * cell_h))
+            cv2.line(grid_layer, (0, y), (w, y), color, thickness, lineType=cv2.LINE_AA)
+
+        cv2.addWeighted(image, 1.0, grid_layer, self.grid_alpha, 0.0, dst=image)
+
     def detect_aruco_markers(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (3, 3), 0)
-        gray = cv2.equalizeHist(gray)
+        # gray = cv2.GaussianBlur(gray, (3, 3), 0)
+        # gray = cv2.equalizeHist(gray)
         corners, ids, _ = aruco.detectMarkers(gray, self.aruco_dict, parameters=self.aruco_params)
 
         robot_ids = self.robot_ids  # Daftar ID robot
@@ -110,8 +179,17 @@ class VisionNode(Node):
             4: (1.0, 1.0, 0.0),  # Kuning (Merah + Hijau)
             5: (1.0, 0.0, 1.0),  # Magenta (Merah + Biru)
         }
+        now = self.get_clock().now().nanoseconds / 1e9
+        if self._last_ts is None:
+            dt = self.timestep / 1000.0  # fallback ke timestep Webots
+        else:
+            dt = max(0.005, min(0.2, now - self._last_ts))  # clamp biar stabil
+        self._last_ts = now
         robot_markers = MarkerArray()
         marker_id = 0
+
+        detected_this_frame = set()  # NEW: track robot yang terdeteksi
+
         if ids is not None:
             for i in range(len(ids)):
                 id = int(ids[i][0])
@@ -153,22 +231,111 @@ class VisionNode(Node):
                     text_marker.lifetime.sec = 1  # Diperbarui setiap frame
                     self.leader_goal_marker_pub.publish(MarkerArray(markers=[text_marker]))
                 elif id in self.robot_ids:
+                    detected_this_frame.add(id)
                     kf = self.kalman_filters[id]
-                    z = np.array([msg.x, msg.y])  # pengamatan
-                    if kf.x[0] == 0 and kf.x[1] == 0:
-                        kf.x[:2] = np.array([[msg.x], [msg.y]])
+                    z = np.array([msg.x, msg.y], dtype=float)
+
+                    # aman untuk numpy
+                    if np.allclose(kf.x[:2, 0], [0.0, 0.0]):
+                        kf.x[0, 0] = msg.x
+                        kf.x[1, 0] = msg.y
+
+                    kf.F = np.array([
+                        [1, 0, dt, 0],
+                        [0, 1, 0, dt],
+                        [0, 0, 1,  0],
+                        [0, 0, 0,  1],
+                    ], dtype=float)
+
+                    q = 0.05  # tuning process noise
+                    dt2 = dt*dt
+                    dt3 = dt2*dt
+                    dt4 = dt2*dt2
+                    kf.Q = np.array([
+                        [dt4/4*q, 0,        dt3/2*q, 0       ],
+                        [0,        dt4/4*q, 0,        dt3/2*q],
+                        [dt3/2*q,  0,        dt2*q,   0       ],
+                        [0,        dt3/2*q,  0,        dt2*q  ],
+                    ], dtype=float)
+
                     kf.predict()
                     kf.update(z)
 
-                    # Ambil hasil filter
-                    filtered_x = float(kf.x[0])
-                    filtered_y = float(kf.x[1])
+                    filtered_x = float(kf.x[0, 0])
+                    filtered_y = float(kf.x[1, 0])
 
                     filtered_msg = Point()
                     filtered_msg.x = filtered_x
                     filtered_msg.y = filtered_y
                     filtered_msg.z = 0.0
                     self.robot_position_pubs[id].publish(filtered_msg)
+                    
+                    # ---------- Heading dari ARUco: gunakan sisi DEPAN TL -> BL ----------
+                    TL = c[0]; BL = c[3]
+                    vx_img = float(TL[0] - BL[0])
+                    vy_img = float(TL[1] - BL[1])
+                    vx = vx_img
+                    vy = -vy_img                          # balik karena sumbu Y citra ke bawah
+                    yaw_img_forward = math.atan2(vy, vx)  # sudut "depan" di bidang citra
+
+                    # ke dunia + offset
+                    yaw_world = wrap_pi(yaw_img_forward + self.img2world + self.marker_offset)
+
+                    # smoothing
+                    prev = self.yaw_filtered[id]
+                    if prev is None:
+                        y_f = yaw_world
+                    else:
+                        err = wrap_pi(yaw_world - prev)
+                        y_f = wrap_pi(prev + self.alpha_yaw * err)
+                    self.yaw_filtered[id] = y_f
+
+                    # --- KOMpensasi latensi 1-frame ---
+                    now = self.get_clock().now().nanoseconds / 1e9
+                    y_pred = y_f
+                    if self.yaw_prev[id] is not None and self.t_prev[id] is not None:
+                        dt = max(1e-3, now - self.t_prev[id])
+                        yaw_rate = wrap_pi(y_f - self.yaw_prev[id]) / dt
+                        y_pred = wrap_pi(y_f + yaw_rate * self.latency_comp)
+
+                    self.yaw_prev[id] = y_f
+                    self.t_prev[id]   = now
+                    self._yaw_aruco = y_pred
+                    self._t_aruco = time.time()
+
+                    # === PUBLISH pakai y_pred (bukan y_f) ===
+                    self.aruco_yaw_publishers[id].publish(Float32(data=float(y_pred)))
+
+                    imu = Imu()
+                    imu.header.stamp = self.get_clock().now().to_msg()
+                    imu.header.frame_id = f'robot_{id}/base_link'
+                    half = 0.5 * y_pred           # pakai y_pred juga di IMU biar konsisten
+                    imu.orientation.x = 0.0
+                    imu.orientation.y = 0.0
+                    imu.orientation.z = math.sin(half)
+                    imu.orientation.w = math.cos(half)
+                    imu.orientation_covariance = [
+                        1e6, 0.0, 0.0,
+                        0.0, 1e6, 0.0,
+                        0.0, 0.0, 0.05 * 0.05
+                    ]
+                    imu.angular_velocity_covariance    = [-1.0] * 9
+                    imu.linear_acceleration_covariance = [-1.0] * 9
+                    self.imu_publishers[id].publish(imu)
+
+                    self.heading_publishers[id].publish(Float32(data=float(y_pred)))
+
+                    L = 40
+                    yaw_draw_img = yaw_img_forward + self.marker_offset
+                    ex = int(cx + L * math.cos(yaw_draw_img))
+                    ey = int(cy - L * math.sin(yaw_draw_img))
+                    cv2.arrowedLine(image, (cx, cy), (ex, ey), (0, 0, 255), 2, tipLength=0.2)
+
+                    now_sec = self.get_clock().now().nanoseconds / 1e9
+                    if now_sec - self.last_heading_log_ts[id] > 1.5:
+                        self.get_logger().info(f"[ROBOT {id}] heading(rad)={y_f:.3f}")
+                        self.last_heading_log_ts[id] = now_sec
+
                     prev_pos = self.previous_positions[id]
                     if prev_pos is not None:
                         dx = filtered_msg.x - prev_pos[0]
@@ -228,6 +395,9 @@ class VisionNode(Node):
                     text_marker.text = f"ROBOT{id}"
                     text_marker.lifetime.sec = 1
                     robot_markers.markers.append(text_marker)
+
+                    color = (0, 0, 255)
+                    label = f"ROBOT {id}"
                 else:
                     color = (0, 255, 0)
                     label = f"ID {id}"
@@ -235,13 +405,49 @@ class VisionNode(Node):
                 cv2.circle(image, (cx, cy), 6, color, -1)
                 cv2.putText(image, label, (cx, cy - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.75, color, 2)
             
+            # ======= SIMPAN GRID POS HANYA UNTUK ROBOT ID =======
+                if id in self.robot_ids:
+                    gy, gx = world_to_grid(filtered_x, filtered_y, GRID_WIDTH, GRID_HEIGHT)
+                    gy = max(0, min(GRID_HEIGHT - 1, int(gy)))
+                    gx = max(0, min(GRID_WIDTH  - 1, int(gx)))
+                    self.last_grid_pos[id] = (gy, gx)
+                    self.last_seen_grid[id] = time.time()
+                    
             if robot_markers.markers:
                 self.robots_marker_pub.publish(robot_markers)
+
+        # Publish NaN jika ingin dan robot tidak terlihat frame ini
+        seen = detected_this_frame if ids is not None else set()
+        if self.pub_nan:
+            for rid in self.robot_ids:
+                if rid not in seen:
+                    self.heading_publishers[rid].publish(Float32(data=float('nan')))
         
         # Check timeout for goal marker
         now = self.get_clock().now().nanoseconds
         if now - self.last_goal_seen_time > 3e9:
             self.get_logger().warn("⚠️ Goal marker (ID=0) tidak terdeteksi selama 3 detik!")
+        
+        # Terakhir: kirim agregat posisi grid semua robot
+        self.publish_all_follower_positions()
+
+    def publish_all_follower_positions(self):
+        """Kirim (y,x) grid semua robot yang masih 'terlihat' baru-baru ini."""
+        now = time.time()
+        pairs = []
+        for rid in self.robot_ids:
+            pos = self.last_grid_pos.get(rid)
+            ts  = self.last_seen_grid.get(rid, 0.0)
+            if pos is None:
+                continue
+            if (now - ts) > self.follower_hold_sec:
+                continue  # sudah kadaluwarsa → skip
+            y, x = pos
+            pairs.extend([int(y), int(x)])
+
+        msg = Int32MultiArray()
+        msg.data = pairs
+        self.all_follower_pub.publish(msg)
 
     def detect_colored_obstacles(self, image):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -328,9 +534,15 @@ class VisionNode(Node):
             self.detect_aruco_markers(image)
             self.detect_colored_obstacles(image)
 
+            if self.show_grid:
+                self.overlay_grid(image)
+
             cv2.imshow("Camera View", image)
             key = cv2.waitKey(1)
-            if key == ord('q'):
+            if key == ord('g'):
+                self.show_grid = not self.show_grid
+                self.get_logger().info(f"Grid overlay: {'ON' if self.show_grid else 'OFF'}")
+            elif key == ord('q'):
                 break
 
 def main(args=None):

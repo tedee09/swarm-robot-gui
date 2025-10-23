@@ -1,0 +1,34 @@
+[1.405s] Invoking command in '/home/tedee/swarm/ros2_ws/src/gui_pkg': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/gui_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/gui_pkg build --build-base /home/tedee/swarm/ros2_ws/build/gui_pkg/build install --record /home/tedee/swarm/ros2_ws/build/gui_pkg/install.log --single-version-externally-managed install_data
+[1.584s] running egg_info
+[1.584s] creating ../../build/gui_pkg/gui_pkg.egg-info
+[1.585s] writing ../../build/gui_pkg/gui_pkg.egg-info/PKG-INFO
+[1.585s] writing dependency_links to ../../build/gui_pkg/gui_pkg.egg-info/dependency_links.txt
+[1.585s] writing entry points to ../../build/gui_pkg/gui_pkg.egg-info/entry_points.txt
+[1.585s] writing requirements to ../../build/gui_pkg/gui_pkg.egg-info/requires.txt
+[1.585s] writing top-level names to ../../build/gui_pkg/gui_pkg.egg-info/top_level.txt
+[1.585s] writing manifest file '../../build/gui_pkg/gui_pkg.egg-info/SOURCES.txt'
+[1.586s] reading manifest file '../../build/gui_pkg/gui_pkg.egg-info/SOURCES.txt'
+[1.586s] writing manifest file '../../build/gui_pkg/gui_pkg.egg-info/SOURCES.txt'
+[1.586s] running build
+[1.586s] running build_py
+[1.586s] creating /home/tedee/swarm/ros2_ws/build/gui_pkg/build
+[1.587s] creating /home/tedee/swarm/ros2_ws/build/gui_pkg/build/lib
+[1.587s] creating /home/tedee/swarm/ros2_ws/build/gui_pkg/build/lib/gui_pkg
+[1.587s] copying gui_pkg/__init__.py -> /home/tedee/swarm/ros2_ws/build/gui_pkg/build/lib/gui_pkg
+[1.587s] copying gui_pkg/gui.py -> /home/tedee/swarm/ros2_ws/build/gui_pkg/build/lib/gui_pkg
+[1.587s] running install
+[1.587s] running install_lib
+[1.587s] creating /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg
+[1.587s] copying /home/tedee/swarm/ros2_ws/build/gui_pkg/build/lib/gui_pkg/__init__.py -> /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg
+[1.587s] copying /home/tedee/swarm/ros2_ws/build/gui_pkg/build/lib/gui_pkg/gui.py -> /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg
+[1.588s] byte-compiling /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg/__init__.py to __init__.cpython-310.pyc
+[1.588s] byte-compiling /home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages/gui_pkg/gui.py to gui.cpython-310.pyc
+[1.590s] running install_data
+[1.590s] creating /home/tedee/swarm/ros2_ws/install/gui_pkg/share/ament_index
+[1.590s] creating /home/tedee/swarm/ros2_ws/install/gui_pkg/share/ament_index/resource_index
+[1.590s] creating /home/tedee/swarm/ros2_ws/install/gui_pkg/share/ament_index/resource_index/packages
+[1.590s] copying resource/gui_pkg -> /home/tedee/swarm/ros2_ws/install/gui_pkg/share/ament_index/resource_index/packages
+[1.590s] copying package.xml -> /home/tedee/swarm/ros2_ws/install/gui_pkg/share/gui_pkg
+[1.590s] creating /home/tedee/swarm/ros2_ws/install/gui_pkg/share/gui_pkg/launch
+[1.590s] error: can't copy 'launch/show_gui.launch.py': doesn't exist or not a regular file
+[1.605s] Invoked command in '/home/tedee/swarm/ros2_ws/src/gui_pkg' returned '1': PYTHONPATH=/home/tedee/swarm/ros2_ws/build/gui_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/tedee/swarm/ros2_ws/install/gui_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/gui_pkg build --build-base /home/tedee/swarm/ros2_ws/build/gui_pkg/build install --record /home/tedee/swarm/ros2_ws/build/gui_pkg/install.log --single-version-externally-managed install_data
