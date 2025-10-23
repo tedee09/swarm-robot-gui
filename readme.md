@@ -1,19 +1,19 @@
 SWARM ROBOT SIMULATION
 ======================
 
-Project ini merupakan simulasi Swarm Robot berbasis ROS 2, yang memanfaatkan Webots, Gazebo, dan RViz2 untuk visualisasi serta pengendalian robot.
+Project ini merupakan simulasi Swarm Robot berbasis ROS 2, yang memanfaatkan Webots, Gazebo, dan RViz2 untuk visualisasi serta GUI pengendalian robot.
 Dengan project ini, kita dapat mempelajari dan menjalankan simulasi pergerakan robot swarm secara interaktif.
 
 
 DEMO SIMULASI
 -------------
-![Image](https://github.com/user-attachments/assets/7874a16f-f11b-4c1c-8061-7b7766401114)
+
 
 INSTALASI & PERSIAPAN
 ---------------------
 1. Clone repository ini atau download dalam bentuk .zip
    ```
-   git clone https://github.com/tedee09/simulation_swarm_ros2_webots.git
+   git clone https://github.com/tedee09/swarm-robot-gui.git
    ```
 
 2. Pindahkan project ke Home Directory
@@ -40,6 +40,7 @@ Jika berhasil, maka secara otomatis akan terbuka:
 - RViz2   : Visualisasi sensor & robot
 - Webots  : Simulasi lingkungan 3D
 - Gazebo  : Simulasi fisika robot
+- GUI	  : Penentu target leader
 
 
 PANDUAN PENGGUNAAN
@@ -55,3 +56,4 @@ FITUR
 - Simulasi multi-robot swarm
 - Integrasi dengan Gazebo, Webots, OpenCV, RViz2
 - Terdapat algoritma path planning & koordinasi robot
+- Terdapat GUI untuk penentu titik target leader
